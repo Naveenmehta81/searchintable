@@ -56,7 +56,7 @@ function App() {
     // setedting(true);
     const edititem = data[index];
 
-  setFromdata({ ...edititem });
+  setFromdata({ ...edititem });  
     // setFromdata({
     //   firstname: edititem.firstname,
     //   lastname: edititem.lastname,
@@ -122,7 +122,7 @@ function App() {
     <>
       <div className="wrapper">
         <div className="container">
-          <h1>Employe info</h1>
+          <h1>Employee info</h1>
           <form className="form-data" onSubmit={submithandler}>
             <label>First Name:</label>
             <input
