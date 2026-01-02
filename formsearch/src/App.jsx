@@ -8,10 +8,12 @@ function App() {
   const [data, setData] = useState([]);
   const [searchinput, setSearchinput] = useState("");
   const [originalData, setOriginalData] = useState([]);
-  const[dateinterval , setdateinterval]= useState({fromdate:"" , todate:""});
-  const[isedting , setedting]= useState(false);
+  // const[dateinterval , setdateinterval]= useState({startdate:"" , enddate:""});
+  const [startdate, setStartdate] = useState("");
+  const [enddate, setEnddate] = useState("");
 
-  
+  // const[isedting , setedting]= useState(false);
+
   const [formdata, setFromdata] = useState({
     firstname: "",
     lastname: "",
@@ -29,7 +31,7 @@ function App() {
 
   function submithandler(event) {
     event.preventDefault();
-   
+
     const newdata = [...originalData, formdata];
     setOriginalData(newdata);
     setData(newdata);
@@ -53,17 +55,18 @@ function App() {
   function handeledit(index) {
     // setedting(true);
     const edititem = data[index];
-    setFromdata({
-      firstname: edititem.firstname,
-      lastname: edititem.lastname,
-      rollno: edititem.rollno,
-      age: edititem.age,
-      date: edititem.date,
-    });
+
+  setFromdata({ ...edititem });
+    // setFromdata({
+    //   firstname: edititem.firstname,
+    //   lastname: edititem.lastname,
+    //   rollno: edititem.rollno,
+    //   age: edititem.age,
+    //   date: edititem.date,
+    // });
     const deletedata = data.filter((_, i) => i !== index);
     setData(deletedata);
-    setOriginalData(deletedata);  // ye delte krke form me le araha h edit krne k liye but i need to not to delete it until user submit the edited data
-         
+    setOriginalData(deletedata); // ye delte krke form me le araha h edit krne k liye but i need to not to delete it until user submit the edited data
   }
 
   const handleinputchange = (event) => {
@@ -83,16 +86,43 @@ function App() {
     setData(filteritem);
   };
 
+  const handlesearchdate = (event) => {
+    event.preventDefault();
 
-   const handlesearch = () => {
-            
-   }
+    if (!startdate && !enddate) {
+      setData(originalData);
+      return;
+    }
+
+    const filterdate = originalData.filter((item) => {
+      const itemDate = item.date;
+
+      const Start = startdate ? itemDate >= startdate : true;
+      const End = enddate ? itemDate <= enddate : true;
+
+      return Start && End;
+    });
+
+    setData(filterdate);
+  };
+
+  const handledate = (event) => {
+    // setdateinterval(() =>({
+    //       [event.target.name]: event.target.value,
+    // }))
+    // console.log(dateinterval)
+    if (event.target.name === "startdate") {
+      setStartdate(event.target.value);
+    } else {
+      setEnddate(event.target.value);
+    }
+  };
 
   return (
     <>
       <div className="wrapper">
         <div className="container">
-           <h1>Employe inf</h1>
+          <h1>Employe info</h1>
           <form className="form-data" onSubmit={submithandler}>
             <label>First Name:</label>
             <input
@@ -162,16 +192,25 @@ function App() {
             onChange={handleinputchange}
           ></input>
 
-          
-          <label className="lable-date">Interval:
-          <input type="date"  className="input-interval" />
-          <label>To</label>
-          <input type="date"    className="input-interval" />
-
-           <button className="search-btn" onClick={handlesearch}>
-            search{" "}
-          </button>
-           </label>
+          <label className="lable-date">
+            Interval:
+            <input
+              type="date"
+              className="input-interval"
+              name="startdate"
+              onChange={handledate}
+            />
+            <label>To</label>
+            <input
+              type="date"
+              className="input-interval"
+              name="enddate"
+              onChange={handledate}
+            />
+            <button className="search-btn" onClick={handlesearchdate}>
+              search{" "}
+            </button>
+          </label>
           <div className="table-container">
             <table>
               <thead>
@@ -193,7 +232,10 @@ function App() {
                     <td>{item.age}</td>
                     <td>{item.date}</td>
                     <td>
-                      <button className="edit-btn" onClick={() => handeledit(index)}>
+                      <button
+                        className="edit-btn"
+                        onClick={() => handeledit(index)}
+                      >
                         <FaEdit />
                       </button>
                     </td>
