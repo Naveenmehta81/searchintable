@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { AiOutlineDelete } from "react-icons/ai";
 import { FaEdit } from "react-icons/fa";
+import { LuArrowUp, LuArrowDown, LuChevronsUpDown } from "react-icons/lu";
 
 import "./App.css";
 
@@ -11,6 +12,57 @@ function App() {
   // const[dateinterval , setdateinterval]= useState({startdate:"" , enddate:""});
   const [startdate, setStartdate] = useState("");
   const [enddate, setEnddate] = useState("");
+
+
+  const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });  
+
+
+
+const requestSort = (key) => {
+  let direction = 'asc';
+  
+  if (sortConfig.key === key) {
+    if (sortConfig.direction === 'asc') {
+      direction = 'desc';
+    } else if (sortConfig.direction === 'desc') {
+ 
+      setSortConfig({ key: null, direction: 'asc' });
+      setData([...originalData]); 
+      return;
+    }
+  }
+
+  setSortConfig({ key, direction });
+
+  const sortedData = [...data].sort((a, b) => {
+    if (a[key] < b[key]) return direction === 'asc' ? -1 : 1;
+    if (a[key] > b[key]) return direction === 'asc' ? 1 : -1;
+    return 0;
+  });
+
+  setData(sortedData);
+};
+  
+
+
+
+
+const getSortIcon = (columnKey) => {
+  
+  if (sortConfig.key !== columnKey) {
+    return <LuChevronsUpDown style={{ marginLeft: '5px', opacity: 1.6,  color : "black"}} />;
+  }
+
+
+  return sortConfig.direction === 'asc' ? 
+    <LuArrowUp style={{ marginLeft: '5px', color: '#010204ff' }} /> : 
+    <LuArrowDown style={{ marginLeft: '5px', color: '#030a12ff' }} />;
+};  
+
+
+
+
+
 
   // const[isedting , setedting]= useState(false);
 
@@ -213,16 +265,24 @@ function App() {
           </label>
           <div className="table-container">
             <table>
-              <thead>
-                <tr>
-                  <th>First Name</th>
-                  <th>Last Name</th>
-                  <th>Roll No</th>
-                  <th>Age</th>
-                  <th>Join Date</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
+            <thead>
+  <tr>
+    <th>First Name</th>
+    <th>Last Name</th>
+    <th>Roll No</th>
+    <th onClick={() => requestSort('age')} style={{ cursor: 'pointer', userSelect: 'none' }}>
+      <div style={{ display: 'flex', alignItems: 'center' }}>
+        Age {getSortIcon('age')}
+      </div>
+    </th>
+    <th onClick={() => requestSort('date')} style={{ cursor: 'pointer', userSelect: 'none' }}>
+      <div style={{ display: 'flex', alignItems: 'center' }}>
+        Join Date {getSortIcon('date')}
+      </div>
+    </th>
+    <th colSpan="2">Actions</th>
+  </tr>
+</thead>
               <tbody>
                 {data.map((item, index) => (
                   <tr key={index}>
